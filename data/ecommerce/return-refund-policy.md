@@ -4,7 +4,7 @@ title: Chính sách đổi trả và hoàn tiền
 audience: buyer               # buyer | seller | both
 category: returns-policy
 language: vi
-source_url: https://example.com/policy/returns
+source_url: https://help.shopee.vn/portal/4/article/77251-CH%C3%8DNH-S%C3%81CH-TR%E1%BA%A2-H%C3%80NG-V%C3%80-HO%C3%80N-TI%E1%BB%80N
 retrieved_at: 2026-09-18
 document_version: "not-stated"
 ---
