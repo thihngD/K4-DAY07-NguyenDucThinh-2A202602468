@@ -1,7 +1,7 @@
 # Báo Cáo Cá Nhân — Lab 7: Embedding & Vector Store
 
 **Họ tên:** Nguyễn Đức Thịnh (MSSV 2A202602468)
-**Nhóm:** [Tên nhóm]
+**Nhóm:** Studo.h (T114)
 **Ngày:** 2026-09-20
 
 > **Nộp 1 bản / sinh viên.** Phần nhóm (lựa chọn tài liệu, thiết kế chiến lược, bộ câu hỏi đánh giá, demo) nộp chung 1 bản trong `REPORT_NHOM.md`. Chi tiết thang điểm: `docs/SCORING.md`.
@@ -58,10 +58,14 @@ Giải thích cách tiếp cận của bạn khi lập trình (implement) các p
 ### Lớp EmbeddingStore
 
 **`add_documents` + `search`** — hướng tiếp cận:
-> Bỏ hẳn nhánh ChromaDB, chỉ dùng list in-memory. `_make_record` chuẩn hóa mỗi `Document` thành record gồm `id`, `content`, `metadata` (copy, không dùng lại object của người gọi), `embedding` và luôn có `metadata["doc_id"]` (mặc định lấy `doc.id` nếu người gọi không đặt). `search` nhúng câu truy vấn rồi tính dot product với từng record; vì vector đã chuẩn hóa nên dot product bằng cosine. Kết quả sắp giảm dần theo `score`, cắt `top_k`, và bỏ `embedding` khỏi output.
+> Mặc định dùng list in-memory (các test không cần ChromaDB); ChromaDB là backend tùy chọn, xem đoạn "Backend ChromaDB" bên dưới. `_make_record` chuẩn hóa mỗi `Document` thành record gồm `id`, `content`, `metadata` (copy, không dùng lại object của người gọi), `embedding` và luôn có `metadata["doc_id"]` (mặc định lấy `doc.id` nếu người gọi không đặt). `search` nhúng câu truy vấn rồi tính dot product với từng record; vì vector đã chuẩn hóa nên dot product bằng cosine. Kết quả sắp giảm dần theo `score`, cắt `top_k`, và bỏ `embedding` khỏi output.
 
 **`search_with_filter` + `delete_document`** — hướng tiếp cận:
 > `search_with_filter` lọc **trước** (giữ record có mọi cặp key/value trong `metadata_filter` khớp) rồi mới search trên tập đã lọc; nếu lọc sau top-k thì các slot có thể bị tài liệu sai chiếm hết và trả về 0 kết quả dù vẫn còn tài liệu hợp lệ. Cả `search` và `search_with_filter` đều đi qua `_search_records` nên không thể lệch nhau. `delete_document` giữ lại các record có `metadata["doc_id"]` khác `doc_id`, trả `True` nếu số record giảm.
+
+**Backend ChromaDB (tùy chọn)** — `EmbeddingStore(..., use_chroma=True, persist_dir=None)`:
+> Import `chromadb` theo kiểu lazy nên máy không cài vẫn chạy in-memory bình thường. Embedding vẫn do `embedding_fn` tính rồi truyền vào `collection.upsert(...)`, Chroma chỉ lưu và tìm. Collection tạo với `hnsw:space="cosine"` và `score = 1 - distance` để điểm so sánh được với dot product của bản in-memory. `search_with_filter` chuyển filter thành `where` (`$eq`, nhiều khóa thì `$and`), Chroma lọc trước rồi mới xếp hạng nên giữ đúng nguyên tắc lọc trước. `delete_document` gọi `get(where={"doc_id": ...})` rồi `delete(ids)`. Metadata phải ép về `str/int/float/bool` vì Chroma từ chối list/None, và tên collection phải 3–512 ký tự nên `_open_chroma_collection` tự chuẩn hóa.
+> **Kiểm chứng (chromadb 1.5.9):** với `MockEmbedder`, hai backend trả cùng id, cùng score (đến 4 chữ số), cùng kết quả khi lọc 1 khóa, 2 khóa và khi lọc không khớp (0 kết quả), `delete_document` trả đúng `True/False`. Với 5 câu hỏi benchmark và embedding OpenAI, thứ tự top-3 **giống hệt** bản in-memory, điểm lệch tối đa ~0.0005 (HNSW xấp xỉ, float32), nên kết quả 5/10 ở mục 5 không đổi. Khác biệt đáng kể: Chroma có thể lưu xuống đĩa (`persist_dir`) và mở rộng tốt hơn khi corpus lớn; với 80 chunk thì in-memory đã đủ nhanh và cho kết quả chính xác tuyệt đối (brute force). Hạn chế: `upsert` ghi đè chunk trùng `id`, trong khi bản in-memory cho phép trùng.
 
 ### Tác tử KnowledgeBaseAgent
 
@@ -148,20 +152,28 @@ Dự đoán được ghi trước khi chạy `compute_similarity()`. Điểm th�
 
 Chạy **5 câu hỏi đánh giá của nhóm** trên mã nguồn cá nhân của bạn trong gói `src`. **5 câu hỏi này phải trùng với các thành viên cùng nhóm** (xem `REPORT_NHOM.md`).
 
-> **CHƯA ĐIỀN.** Mục này cần 5 câu hỏi chung của nhóm và bộ tài liệu thật (chưa có; `data/ecommerce/` mới chỉ có 2 file mẫu dùng `https://example.com`) cùng `bench.py`. Điền sau CP5–CP6.
+> **Cấu hình chạy:** `SentenceChunker(max_sentences_per_chunk=3)` trên 12 file `data/ecommerce/` (bỏ YAML front matter) → 80 chunk; embedding `text-embedding-3-small`; `EmbeddingStore` in-memory, `top_k=3`; agent = `KnowledgeBaseAgent` với LLM `gpt-4o-mini` (`temperature=0`). Câu 2 dùng `search_with_filter(metadata_filter={"audience": "seller"})`, các câu còn lại dùng `search`. Số liệu khớp với khối "Thành viên 2" trong `REPORT_NHOM.md`.
 
 | # | Câu hỏi (Query) | Top-1 Chunk truy xuất được (tóm tắt) | Điểm Score | Có liên quan không? (Relevant) | Câu trả lời của Agent (tóm tắt) |
 |---|-------|--------------------------------|-------|-----------|------------------------|
-| 1 | | | | | |
-| 2 | | | | | |
-| 3 | | | | | |
-| 4 | | | | | |
-| 5 | | | | | |
+| 1 | Đơn thực phẩm đông lạnh giao 2 ngày trước, đổi ý thì trả hàng được không? | `doi-y-khong-con-nhu-cau`: điều kiện chung của Trả hàng do Đổi ý (288 ký tự). Không có chunk mốc 24 giờ hay chunk "hạn chế trả hàng" trong top-3. | 0.5840 | **Không** (multi-hop, cần 2 tài liệu; cả 2 chunk gold nằm ngoài top-3) | Trả lời "không tìm thấy thông tin về trả hàng đối với thực phẩm đông lạnh". Không bịa, nhưng thiếu đáp án "Không, quá hạn 24 giờ và thuộc danh sách hạn chế". |
+| 2 | Shop Voucher do Người bán phát hành có được hoàn lại không? (lọc `audience=seller`) | `quy-dinh-chung-tra-hang-hoan-tien-seller` §3 Shop Voucher (246 ký tự) | 0.7177 | **Có** | "Không được hoàn lại trong bất cứ trường hợp nào [1]." Đúng gold. |
+| 3 | Trả hàng "Tự sắp xếp", đơn không phải Mall, khác tỉnh: hỗ trợ phí bao nhiêu, bao lâu? | `phuong-thuc-phi-gui-hang-hoan-tra` §2.2 "Phí vận chuyển trả hàng" (951 ký tự) | 0.7455 | **Có** | "40.000 Shopee Xu, trong 3–5 ngày làm việc [1]." Đúng gold (thiếu ý cùng tỉnh 25.000 Xu vì chỉ hỏi khác tỉnh). |
+| 4 | Dung lượng tối đa ảnh/video làm bằng chứng, và bổ sung bằng chứng trong bao lâu? | `quy-dinh-chung-tra-hang-hoan-tien-buyer` §1.2 (mốc thời hạn gửi yêu cầu, 549 ký tự). Chunk đầu bài `chuan-bi-bang-chung-tra-hang` chỉ đứng hạng 2 và không chứa "5MB". | 0.7085 | **Không** (đúng chủ đề nhưng sai chunk; câu "Không quá 5MB/ảnh" xếp hạng 28/80) | Trả lời "không tìm thấy thông tin về dung lượng và thời gian bổ sung". Trung thực với ngữ cảnh nhưng sai so với gold. |
+| 5 | Thanh toán thẻ tín dụng thì bao lâu nhận tiền hoàn, so với Ví ShopeePay? | `thoi-gian-nhan-tien-hoan`: chunk đứng đầu là mảnh "24 giờ" của Bảng 1 (970 ký tự); chunk chứa cả bảng (1.839 ký tự) xếp hạng 3 | 0.7149 (top-1); gold ở hạng 3: 0.7098 | **Một phần** (top-1 chưa đủ; đáp án có trong top-3) | "Thẻ tín dụng 7–14 ngày làm việc tùy ngân hàng; Ví ShopeePay 24 giờ [3]." Đúng gold vì agent đọc cả 3 chunk. |
 
-**Bao nhiêu câu hỏi trả về chunk có liên quan trong top-3?** __ / 5
+**Bao nhiêu câu hỏi trả về chunk có liên quan trong top-3?** **3 / 5** (câu 2, 3, 5). Theo cách chấm 2 điểm/câu của `docs/SCORING.md`: câu 2 và 3 được 2 điểm, câu 5 được 1 điểm (gold ở hạng 3, không ở top-1), câu 1 và 4 được 0 điểm, tổng **5/10**.
+
+**Nhận xét lỗi:**
+- **Câu 1 (multi-hop):** cả 3 chunk top-3 đều bám cụm từ "đổi ý"/"trả hàng" chứ không bám "thực phẩm đông lạnh" hay "24 giờ". Với chunk theo câu, mỗi chunk chỉ mang một mảnh thông tin nên một truy vấn cần ghép hai tài liệu rất khó trúng cả hai.
+- **Câu 4:** đáp án là hai dòng ngắn ("Hình ảnh: Không quá 5MB/ảnh.", "Video: Không quá 100 MB/video…") nằm cạnh các dòng tiêu đề/gạch đầu dòng trong bài bằng chứng, nên chunk chứa chúng (hạng 28/80) không nổi bật so với truy vấn. Vế "bao lâu" của câu hỏi lại kéo chunk về thời hạn gửi yêu cầu (§1.2 bài buyer) lên top-1. Tôi chưa kiểm chứng nguyên nhân này bằng thực nghiệm khác (ví dụ tách câu hỏi làm hai), nên xem đây là giả thuyết.
+- **Câu 5:** bảng bị crawl thành text phẳng nên dính thành chunk dài 1.839 ký tự, làm điểm của nó (0.7098) ngang với hai chunk cùng tài liệu (0.7149 / 0.7132). Xếp hạng chỉ hơn kém nhau 0.005, tức embedding không phân biệt được chunk nào "đúng" hơn.
+- **Câu 2 cho thấy filter có ích:** khi không lọc, chunk buyer về "Hoàn lại Mã giảm giá" (nói mã *được* hoàn) chen lên hạng 2 với score 0.667. Lọc `audience=seller` loại nó ra nên agent trả lời đúng.
 
 **Điều hay nhất tôi học được từ thành viên khác / nhóm khác (qua demo):**
-> *Điền sau buổi demo.*
+> Từ số liệu của Khánh (Recursive 500, Gemini embedding, 6/10) trên cùng bộ câu hỏi: chunk theo ranh giới `
+
+` giữ trọn từng mục quy định (3/5 câu đạt top-1 kèm số liệu, trong đó có câu 4 mà Sentence của tôi trượt), và bước *gom lên* tới sát `chunk_size` quan trọng không kém bước đệ quy xuống, vì corpus đầy dòng ngắn. Cả hai chiến lược đều thua câu 1 (multi-hop) và câu 5 (bảng), nên bài học chung là lỗi nằm ở dữ liệu bị crawl thành text phẳng (mất cấu trúc bảng) hơn là ở thuật toán chunking. Lưu ý điểm của tôi (OpenAI) và của Khánh (Gemini) dùng embedding khác nhau nên chưa so tuyệt đối được.
 
 ---
 
@@ -169,9 +181,9 @@ Chạy **5 câu hỏi đánh giá của nhóm** trên mã nguồn cá nhân củ
 
 | Tiêu chí | Điểm tự đánh giá |
 |----------|-------------------|
-| Khởi động (Warm-up) | / 5 |
-| Hướng tiếp cận của tôi (My Approach) | / 10 |
-| Hoàn thiện code (Core Implementation — tests) | / 30 |
-| Dự đoán độ tương tự (Similarity Predictions) | / 5 |
-| Kết quả truy xuất của tôi (Competition Results) | / 10 |
-| **Tổng phần cá nhân** | **/ 60** |
+| Khởi động (Warm-up) | 5 / 5 |
+| Hướng tiếp cận của tôi (My Approach) | 9 / 10 |
+| Hoàn thiện code (Core Implementation — tests) | 30 / 30 |
+| Dự đoán độ tương tự (Similarity Predictions) | 5 / 5 |
+| Kết quả truy xuất của tôi (Competition Results) | 5 / 10 |
+| **Tổng phần cá nhân** | **54 / 60** |

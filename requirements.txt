@@ -7,4 +7,5 @@ python-dotenv==1.2.2
 #   Local, free, no API key : pip install -r requirements-local.txt
 #   OpenAI                  : pip install openai
 #   Gemini (free tier)      : pip install google-genai
+#   ChromaDB backend        : pip install chromadb   (EmbeddingStore(use_chroma=True))
 # See README.md "Tuy Chon Mo Hinh Nhung" or Phu luc B in the lab doc.
