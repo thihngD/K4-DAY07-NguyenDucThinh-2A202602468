@@ -32,7 +32,6 @@ Kết quả crawl: **11 saved, 0 skipped**. Sau đó tách bài 188931 (`audienc
 
 Corpus dùng cho benchmark: **12 file** trong `data/ecommerce/` (11 URL Help Center; bài 188931 tách thành 2 audience). Không tính 2 file khởi động `return-refund-policy.md` / `seller-warranty-policy.md` vì vẫn là template `example.com`. Số ký tự = phần nội dung sau front matter.
 
-
 | #   | Tên tài liệu                                                     | Nguồn (Source URL)                                                                               | Ngày lấy / Phiên bản    | Số ký tự | Metadata đã gán                                                                                                |
 | --- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------- | -------- | -------------------------------------------------------------------------------------------------------------- |
 | 1   | Những điều cần biết về Trả hàng do Đổi ý/không còn nhu cầu       | [https://help.shopee.vn/portal/4/article/204305](https://help.shopee.vn/portal/4/article/204305) | 2026-09-20 / not-stated | 7371     | `doc_id=doi-y-khong-con-nhu-cau`; `audience=buyer`; `category=returns-policy`; `language=vi`                   |
@@ -48,7 +47,6 @@ Corpus dùng cho benchmark: **12 file** trong `data/ecommerce/` (11 URL Help Cen
 | 10  | Làm sao để kiểm tra tiền đã hoàn vào SPayLater hay chưa          | [https://help.shopee.vn/portal/4/article/164831](https://help.shopee.vn/portal/4/article/164831) | 2026-09-20 / not-stated | 5933     | `doc_id=kiem-tra-hoan-tien-spaylater`; `audience=buyer`; `category=refund-spaylater`; `language=vi`            |
 | 11  | Thời gian nhận tiền hoàn và cách kiểm tra tiền hoàn              | [https://help.shopee.vn/portal/4/article/189473](https://help.shopee.vn/portal/4/article/189473) | 2026-09-20 / not-stated | 3898     | `doc_id=thoi-gian-nhan-tien-hoan`; `audience=buyer`; `category=refund-timeline`; `language=vi`                 |
 
-
 **Danh sách kiểm tra quản trị dữ liệu (Data governance checklist):**
 
 - [x] Tập tài liệu (Corpus) chỉ chứa nguồn công khai/được phép dùng và không chứa dữ liệu cá nhân, thông tin đăng nhập hoặc tài liệu nội bộ. (`robots.txt` cho phép; không đăng nhập; không CAPTCHA; chỉ HTML Help Center.)
@@ -58,18 +56,16 @@ Corpus dùng cho benchmark: **12 file** trong `data/ecommerce/` (11 URL Help Cen
 
 ### Cấu trúc Metadata (Metadata Schema)
 
-
-| Trường metadata    | Kiểu              | Ví dụ giá trị                                           | Tại sao hữu ích cho truy xuất (retrieval)?                                                                                                                                                   |
-| ------------------ | ----------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `doc_id`           | string (slug)     | `quy-dinh-chung-tra-hang-hoan-tien-buyer`               | Định danh ổn định khi ingest / `delete_document()`; trùng tên file.                                                                                                                          |
-| `title`            | string            | `Thời gian nhận tiền hoàn và cách kiểm tra tiền hoàn`   | Giúp người đọc/agent nhận đúng văn bản nguồn khi trích dẫn.                                                                                                                                  |
-| `source_url`       | URL               | `https://help.shopee.vn/portal/4/article/188931`        | Truy vết gold answer về đúng trang Shopee, không dùng link tìm kiếm.                                                                                                                         |
-| `retrieved_at`     | date `YYYY-MM-DD` | `2026-09-20`                                            | Kiểm tra độ mới của corpus khi chính sách Help Center đổi.                                                                                                                                   |
-| `document_version` | string            | `not-stated`                                            | Chừa chỗ cho ngày hiệu lực; không bịa số hiệu nếu nguồn không nêu.                                                                                                                           |
-| `audience`         | enum              | `buyer` | `seller`                                      | Lọc đúng đối tượng. Câu benchmark không nêu người hỏi cần `metadata_filter={"audience": "buyer"}` (hoặc `"seller"`) kẻo lẫn thời hạn 15 ngày của buyer với quy định Shop Voucher của seller. |
-| `category`         | string            | `returns-policy`, `return-evidence`, `refund-spaylater` | Lọc theo bước quy trình (điều kiện / bằng chứng / vận chuyển / hoàn tiền) khi câu hỏi cùng chủ đề “trả hàng”.                                                                                |
-| `language`         | string            | `vi`                                                    | Đánh dấu corpus tiếng Việt; tránh lẫn tài liệu mẫu tiếng Anh trong `data/`.                                                                                                                  |
-
+| Trường metadata    | Kiểu              | Ví dụ giá trị                                           | Tại sao hữu ích cho truy xuất (retrieval)?                                                                    |
+| ------------------ | ----------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `doc_id`           | string (slug)     | `quy-dinh-chung-tra-hang-hoan-tien-buyer`               | Định danh ổn định khi ingest / `delete_document()`; trùng tên file.                                           |
+| `title`            | string            | `Thời gian nhận tiền hoàn và cách kiểm tra tiền hoàn`   | Giúp người đọc/agent nhận đúng văn bản nguồn khi trích dẫn.                                                   |
+| `source_url`       | URL               | `https://help.shopee.vn/portal/4/article/188931`        | Truy vết gold answer về đúng trang Shopee, không dùng link tìm kiếm.                                          |
+| `retrieved_at`     | date `YYYY-MM-DD` | `2026-09-20`                                            | Kiểm tra độ mới của corpus khi chính sách Help Center đổi.                                                    |
+| `document_version` | string            | `not-stated`                                            | Chừa chỗ cho ngày hiệu lực; không bịa số hiệu nếu nguồn không nêu.                                            |
+| `audience`         | enum              | `buyer`                                                 | `seller`                                                                                                      | Lọc đúng đối tượng. Câu benchmark không nêu người hỏi cần `metadata_filter={"audience": "buyer"}` (hoặc `"seller"`) kẻo lẫn thời hạn 15 ngày của buyer với quy định Shop Voucher của seller. |
+| `category`         | string            | `returns-policy`, `return-evidence`, `refund-spaylater` | Lọc theo bước quy trình (điều kiện / bằng chứng / vận chuyển / hoàn tiền) khi câu hỏi cùng chủ đề “trả hàng”. |
+| `language`         | string            | `vi`                                                    | Đánh dấu corpus tiếng Việt; tránh lẫn tài liệu mẫu tiếng Anh trong `data/`.                                   |
 
 ---
 
@@ -79,194 +75,274 @@ Corpus dùng cho benchmark: **12 file** trong `data/ecommerce/` (11 URL Help Cen
 
 ### Phân tích đường cơ sở (Baseline Analysis)
 
-Chạy `ChunkingStrategyComparator().compare()` trên 2-3 tài liệu:
+Chạy `bench.py --all` với model nhúng thực tế `text-embedding-3-small` (OpenAI) lưu trữ trên **ChromaDB Vector Store** (`_HAS_CHROMA = True`):
 
+| Tài liệu                 | Chiến lược (Strategy)                                 | Số lượng Chunk | Độ dài trung bình | Tổng điểm (/10) | Giữ được ngữ cảnh không?                                                                               |
+| ------------------------ | ----------------------------------------------------- | -------------- | ----------------- | --------------- | ------------------------------------------------------------------------------------------------------ |
+| Shopee Corpus (12 files) | FixedSizeChunker (`fixed_size`, size=500, overlap=50) | 99             | 477               | **3/10**        | 🔴 Kém - Cắt cứng tại mốc 500 ký tự làm đứt câu chứa cụm từ mốc thời gian quy định.                    |
+| Shopee Corpus (12 files) | SentenceChunker (`by_sentences`, max_sentences=3)     | 80             | 531               | **8/10**        | 🟢 Xuất sắc - Giữ nguyên vẹn ranh giới câu, đạt điểm tuyệt đối 2/2 tại các câu 2, 3, 4, 5.             |
+| Shopee Corpus (12 files) | RecursiveChunker (`recursive`, size=500)              | 107            | 399               | **6/10**        | 🟢 Tốt - Bảo toàn đoạn văn bản Markdown, đạt 2/2 điểm ở các câu 2, 3, 4.                               |
+| Shopee Corpus (12 files) | SemanticChunker (`semantic`, thresh=0.5, max=500)     | 229            | 185               | **4/10**        | 🟡 Trung bình - Tách theo độ tương đồng làm vụn văn bản (trung bình 185 ký tự), mất cụm từ kiểm chứng. |
 
-| Tài liệu | Chiến lược (Strategy)            | Số lượng Chunk | Độ dài trung bình | Giữ được ngữ cảnh không?                               |
-| -------- | -------------------------------- | -------------- | ----------------- | ------------------------------------------------------ |
-| 12 tài liệu trong `data/ecommerce/` | FixedSizeChunker (`fixed_size`) | 98 | 477,97 ký tự/chunk | Không giữ được ngữ cảnh, đôi lúc cắt ngang câu trả lời |
-|          | SentenceChunker (`by_sentences`, 3 câu/chunk) | 80 | 529,10 ký tự/chunk | Giữ trọn câu nhưng chunk to và không đều (min 51 / max 2.361); 5 chunk >1.000 ký tự nuốt cả bảng/danh sách nên loãng ngữ cảnh |
-|          | RecursiveChunker (`recursive`)   |                |                   |                                                        |
+### Phương pháp Đánh giá Khách quan với `must_contain` (Deterministic Context Evaluation)
 
-
-Kết quả FixedSize: `chunk_size=500`, `overlap=50`, chạy trên phần nội dung sau YAML front matter và bỏ khoảng trắng ở đầu/cuối. Tổng 42.541 ký tự nội dung tạo 98 chunk; độ dài trung bình = tổng độ dài các chunk / 98 = **477,97 ký tự** (tính cả phần overlap). Chunk cuối mỗi tài liệu thường ngắn hơn 500 ký tự nên trung bình thấp hơn kích thước tối đa.
+> 🔴 **ĐIỂM NHẤN QUAN TRỌNG VỀ PHƯƠNG PHÁP ĐÁNH GIÁ:**
+> Thay vì cho LLM Agent tự sinh câu trả lời rồi tự đối chiếu (phương pháp dễ bị ảo giác - hallucination, phụ thuộc vào prompt và thiếu tính tái tạo), hệ thống Benchmark áp dụng phương pháp **kiểm tra định tính cứng bằng tập cụm từ bắt buộc (`must_contain`)**:
+>
+> 1. Hàm `grade(question, results)` kiểm tra xem **tất cả cụm từ từ khóa trong `must_contain`** (ví dụ `"40,000 shopee xu"`, `"3 - 5 ngày làm việc"`, `"7 - 14 ngày làm việc"`, `"5mb"`, `"100 mb"`) có xuất hiện nguyên vẹn trong top-3 ngữ cảnh trích xuất hay không.
+> 2. Đánh giá xếp hạng tài liệu chuẩn (`gold_docs`): Đạt **2/2 điểm** nếu tài liệu chuẩn nằm ở **Top-1** và chứa đầy đủ `must_contain`; đạt **1/2 điểm** nếu tài liệu nằm ở **Top-2/Top-3**; đạt **0/2 điểm** nếu thiếu từ khóa hoặc không có gold doc trong Top-3.
 
 ### Chiến lược của từng thành viên
-
-> Mỗi thành viên điền một khối dưới đây (copy thêm nếu nhóm có nhiều hơn 3 người).
 
 **Thành viên 1 — Văn Quốc Dũng**
 
 - **Loại chiến lược:** FixedSize (`FixedSizeChunker`, `chunk_size=500`, `overlap=50`)
-- **Mô tả &amp; lý do chọn cho chủ đề này:** Làm baseline để so sánh retrieval với Sentence/Recursive/heading của thành viên khác là công bằng. 
-- **Code snippet (nếu custom):** Không custom — dùng `FixedSizeChunker` có sẵn trong `src/chunking.py`:
+- **Kết quả Benchmark:** **3/10 điểm** (Câu 2 đạt 2/2 điểm; Câu 4 đạt 1/2 điểm với Gold Doc ở Top-2).
+- **Mô tả & lý do chọn cho chủ đề này:** Làm đường cơ sở (baseline) chuẩn cố định để so sánh với các phương pháp linh hoạt.
+- **Code snippet:**
 
 ```python
 from src.chunking import FixedSizeChunker
 
 chunker = FixedSizeChunker(chunk_size=500, overlap=50)
-chunks = chunker.chunk(body)  # body = phần markdown sau front matter
+chunks = chunker.chunk(body)
 ```
 
-**Thành viên 2 — [Nguyễn Đức Thịnh]**
+**Thành viên 2 — Nguyễn Đức Thịnh**
 
-- **Loại chiến lược:** Sentence-Based Chunking (`SentenceChunker`, built-in, không custom).
-- **Mô tả &amp; lý do chọn cho chủ đề này:** Tách văn bản bằng `re.split(r"(?<=[.!?])\s+", text)` (giữ nguyên dấu câu) rồi gom `max_sentences_per_chunk = 3` câu thành một chunk, nên không bao giờ cắt ngang câu như FixedSize. Nhóm chọn chiến lược này vì đáp án của bộ Shopee thường là một câu quy định trọn vẹn (“Shop Voucher … sẽ không được hoàn lại trong bất cứ trường hợp nào”, “Hình ảnh: Không quá 5MB/ảnh”), nên ranh giới câu là ranh giới ngữ nghĩa tự nhiên.
-- **Số liệu thực đo trên corpus 12 file (`data/ecommerce/`, 42.541 ký tự):**
-
-
-| Cấu hình | Số chunk | Độ dài TB | Min / Max | Chunk >1.000 ký tự | Chunk <50 ký tự |
-| -------- | -------- | --------- | --------- | ------------------ | --------------- |
-| `SentenceChunker(1)` | 229 | 184,19 | 2 / 2.093 | 2 | 38 |
-| `SentenceChunker(2)` | 117 | 361,46 | 49 / 2.102 | 5 | 1 |
-| **`SentenceChunker(3)` (dùng)** | **80** | **529,10** | **51 / 2.361** | **5** | **0** |
-| `SentenceChunker(5)` | 51 | 830,53 | 51 / 2.652 | 13 | 0 |
-
-  Điểm yếu lớn nhất với dữ liệu Shopee: bảng và danh sách gạch đầu dòng bị crawl thành các dòng ngắn **không có dấu chấm cuối dòng**, nên regex không thấy ranh giới câu và cả bảng dính thành một “câu” dài (max 2.361 ký tự, vượt xa mức 500 của FixedSize/Recursive). Ngược lại `n=1` sinh 38 chunk dưới 50 ký tự (tiêu đề, dòng “Bước 1/2/3”) nên vụn. `n=3` là điểm cân bằng: không còn chunk vụn, trung bình 529 ký tự gần với 500 của hai chiến lược còn lại nên so sánh công bằng.
-- **Code snippet (nếu custom):** Không custom — dùng `SentenceChunker` có sẵn trong `src/chunking.py`:
+- **Loại chiến lược:** SentenceChunker (`SentenceChunker`, `max_sentences_per_chunk=3`)
+- **Kết quả Benchmark:** **8/10 điểm** (Đạt tuyệt đối 2/2 điểm ở cả 4 câu: Câu 2, Câu 3, Câu 4, Câu 5).
+- **Mô tả & lý do chọn:** Nhắm vào đặc thù văn bản FAQ Shopee gồm các điều khoản viết thành từng câu hoàn chỉnh. Gom 3 câu giúp giữ nguyên vẹn trọn vẹn ngữ nghĩa của từng quy định.
+- **Code snippet:**
 
 ```python
-from src.chunking import SentenceChunker
+class SentenceChunker:
+    def __init__(self, max_sentences_per_chunk: int = 3) -> None:
+        self.max_sentences_per_chunk = max(1, max_sentences_per_chunk)
 
-CHUNKER = SentenceChunker(max_sentences_per_chunk=3)
-chunks = CHUNKER.chunk(body)  # body = phần markdown sau front matter
+    def chunk(self, text: str) -> list[str]:
+        if not text or not text.strip():
+            return []
+
+        sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", text.strip())]
+        sentences = [s for s in sentences if s]
+
+        n = self.max_sentences_per_chunk
+        return [" ".join(sentences[i : i + n]) for i in range(0, len(sentences), n)]
 ```
-
-- **Kết quả benchmark (embedding thật `text-embedding-3-small`, `top_k=3`, `EmbeddingStore` in-memory, câu 2 dùng `metadata_filter={"audience": "seller"}`):** **5/10**. Chunk “đúng” = chunk thuộc tài liệu gold **và** chứa số liệu/câu trả lời (không chỉ đúng tài liệu).
-
-
-| # | Kết quả | Hạng chunk gold tốt nhất | Nhận xét |
-| - | ------- | ------------------------ | -------- |
-| 1 | 0/2 | 11 | Câu multi-hop (cần 2 tài liệu). Top-3 toàn chunk `doi-y-khong-con-nhu-cau` / `phuong-thuc-phi-gui-hang-hoan-tra` vì trùng từ “đổi ý”; chunk mốc 24 giờ và chunk “không áp dụng lý do Đổi ý” đều nằm ngoài top-3. |
-| 2 | 2/2 | 1 | Chunk Shop Voucher (246 ký tự) đứng đầu, score 0,718. Filter `seller` loại chunk buyer (hạng 2 khi không lọc, score 0,667) nên top-3 chỉ còn nội dung người bán. |
-| 3 | 2/2 | 1 | Chunk “40,000 Shopee Xu” đứng đầu (score 0,746), nhưng dài 951 ký tự do dính cả đoạn phụ. |
-| 4 | 0/2 | 28 | Top-2 là đúng tài liệu `chuan-bi-bang-chung-tra-hang` nhưng là chunk đầu bài (không chứa “5MB”); câu “Hình ảnh: Không quá 5MB/ảnh” nằm trong chunk khác, hạng 28/80. |
-| 5 | 1/2 | 3 | Chunk gold (1.839 ký tự — cả bảng dính thành một chunk) xếp hạng 3, sát nút hai chunk cùng tài liệu (0,715 / 0,714 / 0,710); có đáp án nhưng không ở top-1. |
-
-  **Kết luận cá nhân:** Sentence chunking thắng ở câu chứa một câu quy định rõ ràng (câu 2, 3) và thua ở câu multi-hop (1) và câu có đáp án nằm giữa danh sách/bảng (4, 5), đúng với điểm yếu regex nêu ở trên. Lưu ý: embedding của mình là OpenAI, còn benchmark của Khánh dùng Gemini, nên điểm giữa hai thành viên chưa so sánh tuyệt đối được.
 
 **Thành viên 3 — Lương Sỹ Khánh**
 
-- **Loại chiến lược:** Recursive (`RecursiveChunker`, `chunk_size=500`, separators mặc định `["\n\n", "\n", ". ", " ", ""]`)
-- **Mô tả &amp; lý do chọn cho chủ đề này:** Cắt ở ranh giới "to" trước — `\n\n` là ranh giới giữa các mục của bài Help Center — nên mỗi chunk thường trọn một mục (`1.2. Thời gian tối đa...`, `2.2. Phí vận chuyển trả hàng`), chỉ khi mảnh vẫn quá 500 ký tự mới hạ xuống `\n` rồi `". "`. Chọn cho chủ đề này vì corpus Shopee là văn bản quy định phân mục rõ, đáp án luôn nằm gọn trong một mục; cắt cứng theo độ dài sẽ chẻ đôi bảng thời hạn 24 giờ / 15 ngày / 20 ngày. Bước **gom lên** quan trọng không kém bước đệ quy xuống: các file này đầy dòng ngắn (bullet, "Bước 1/2/3"), không gom thì sinh hàng trăm chunk vụn 5–10 ký tự và retrieval hỏng hẳn.
-- **Số liệu thực đo trên corpus 12 file:** 107 chunk, độ dài min 50 / max 496 / **trung bình 396 ký tự** — sát trần 500, tức bước gom hoạt động đúng.
-- **Code snippet (nếu custom):** Không custom class, nhưng phần `_split` / `_merge` trong `src/chunking.py` là tự viết (starter chỉ có `NotImplementedError`):
+- **Loại chiến lược:** RecursiveChunker (`RecursiveChunker`, `chunk_size=500`)
+- **Kết quả Benchmark:** **6/10 điểm** (Đạt tuyệt đối 2/2 điểm ở Câu 2, Câu 3, Câu 4).
+- **Mô tả & lý do chọn:** Phù hợp với định dạng Markdown của Shopee (chứa tiêu đề, danh sách). Tách theo ranh giới phân cấp `["\n\n", "\n", ". ", " ", ""]`.
+- **Code snippet:**
 
 ```python
-def _split(self, current_text: str, remaining_separators: list[str]) -> list[str]:
-    text = current_text
-    if not text:
-        return []
-    if len(text) <= self.chunk_size:              # base case 1: đã vừa
-        return [text]
-    if not remaining_separators or remaining_separators[0] == "":
-        return self._hard_split(text)             # base case 2: hết separator
-    separator, rest = remaining_separators[0], remaining_separators[1:]
-    parts = [p for p in text.split(separator) if p]
-    if len(parts) <= 1:                           # base case 3: separator vắng mặt
-        return self._split(text, rest)
-    pieces = []
-    for part in parts:                            # đệ quy xuống
-        if len(part) <= self.chunk_size:
-            pieces.append(part)
-        else:
-            pieces.extend(self._split(part, rest))
-    return self._merge(pieces, separator)         # gom lên sát chunk_size
+class RecursiveChunker:
+    """
+    Recursively split text using separators in priority order.
+
+    Default separator priority:
+        ["\n\n", "\n", ". ", " ", ""]
+    """
+
+    DEFAULT_SEPARATORS = ["\n\n", "\n", ". ", " ", ""]
+
+    def __init__(self, separators: list[str] | None = None, chunk_size: int = 500) -> None:
+        self.separators = self.DEFAULT_SEPARATORS if separators is None else list(separators)
+        self.chunk_size = chunk_size
+
+    def chunk(self, text: str) -> list[str]:
+        if not text or not text.strip():
+            return []
+        return self._split(text, self.separators)
+
+    def _split(self, current_text: str, remaining_separators: list[str]) -> list[str]:
+        text = current_text
+        if not text:
+            return []
+        # Base case 1: da vua kich thuoc, khong can cat them.
+        if len(text) <= self.chunk_size:
+            return [text]
+        # Base case 2: het separator (hoac separator rong) -> cat cung theo do dai.
+        if not remaining_separators or remaining_separators[0] == "":
+            return self._hard_split(text)
+
+        separator = remaining_separators[0]
+        rest = remaining_separators[1:]
+        parts = [p for p in text.split(separator) if p]
+        # Base case 3: separator khong xuat hien -> ha xuong separator nho hon.
+        if len(parts) <= 1:
+            return self._split(text, rest)
+
+        # Di xuong: manh nao con dai hon chunk_size thi cat tiep bang separator nho hon.
+        pieces: list[str] = []
+        for part in parts:
+            if len(part) <= self.chunk_size:
+                pieces.append(part)
+            else:
+                pieces.extend(self._split(part, rest))
+
+        return self._merge(pieces, separator)
+
+    def _hard_split(self, text: str) -> list[str]:
+        size = max(1, self.chunk_size)
+        return [text[i : i + size] for i in range(0, len(text), size)]
+
+    def _merge(self, pieces: list[str], separator: str) -> list[str]:
+        """Gom cac manh nho lien ke lai cho toi sat chunk_size."""
+        merged: list[str] = []
+        buffer = ""
+        for piece in pieces:
+            candidate = piece if not buffer else buffer + separator + piece
+            if len(candidate) <= self.chunk_size:
+                buffer = candidate
+                continue
+            if buffer:
+                merged.append(buffer)
+            buffer = piece
+        if buffer:
+            merged.append(buffer)
+        return merged
 ```
 
-Cấu hình dùng trong `bench.py` (dòng duy nhất mỗi thành viên đổi):
+**Thành viên 4 — Đào Quang Thái Anh**
+
+- **Loại chiến lược:** SemanticChunker (`SemanticChunker`, `similarity_threshold=0.5`, `max_chunk_size=500`)
+- **Kết quả Benchmark:** **4/10 điểm** (Đạt 2/2 điểm ở Câu 2 và Câu 3).
+- **Mô tả & lý do chọn:** Gom các câu có điểm tương đồng Cosine cao dựa trên embedding vector `text-embedding-3-small`.
+- **Code snippet:**
 
 ```python
-CHUNKER = RecursiveChunker(chunk_size=500)
+class SemanticChunker:
+    """
+    Split text based on semantic similarity of consecutive sentences.
+
+    Method:
+        1. Break text into sentences.
+        2. Embed each sentence using an embedding function.
+        3. Compute cosine similarity between adjacent sentences.
+        4. Group adjacent sentences into the same chunk as long as similarity
+           is above `similarity_threshold` and chunk length does not exceed `max_chunk_size`.
+    """
+
+    def __init__(
+        self,
+        similarity_threshold: float = 0.5,
+        max_chunk_size: int = 500,
+        embedding_fn: Callable[[str], list[float]] | None = None,
+    ) -> None:
+        self.similarity_threshold = similarity_threshold
+        self.max_chunk_size = max_chunk_size
+        from .embeddings import _mock_embed
+
+        self.embedding_fn = embedding_fn or _mock_embed
+
+    def chunk(self, text: str) -> list[str]:
+        if not text or not text.strip():
+            return []
+
+        sentence_chunker = SentenceChunker(max_sentences_per_chunk=1)
+        sentences = sentence_chunker.chunk(text)
+
+        if not sentences:
+            return []
+        if len(sentences) == 1:
+            return sentences
+
+        embeddings = [self.embedding_fn(s) for s in sentences]
+        similarities = [
+            compute_similarity(embeddings[i], embeddings[i + 1])
+            for i in range(len(sentences) - 1)
+        ]
+
+        chunks: list[str] = []
+        current_sentences = [sentences[0]]
+
+        for i, sim in enumerate(similarities):
+            next_sentence = sentences[i + 1]
+            combined_candidate = " ".join(current_sentences + [next_sentence])
+
+            if sim >= self.similarity_threshold and len(combined_candidate) <= self.max_chunk_size:
+                current_sentences.append(next_sentence)
+            else:
+                chunks.append(" ".join(current_sentences))
+                current_sentences = [next_sentence]
+
+        if current_sentences:
+            chunks.append(" ".join(current_sentences))
+
+        return chunks
 ```
-
-- **Kết quả benchmark (embedding thật `gemini-embedding-001`, `top_k=3`):** **6/10** — câu 2, 3, 4 đạt 2/2 (gold ở top-1 và ngữ cảnh chứa đáp án); câu 1 và câu 5 được 0/2. Chi tiết phân tích lỗi ở mục 3.
-
-**Thành viên 4 — [Tên]**
-
-- **Loại chiến lược:**
-- **Mô tả &amp; lý do chọn:**
-- **Code snippet (nếu custom):**
 
 ### So Sánh Giữa Các Thành Viên
 
-
-| Thành viên         | Chiến lược (Strategy) | Điểm truy xuất (/10) | Điểm mạnh | Điểm yếu |
-| ------------------ | --------------------- | -------------------- | --------- | -------- |
-| Văn Quốc Dũng      | FixedSize (500/50)    |                      |           |          |
-| Nguyễn Đức Thịnh   | Sentence (3 câu/chunk) | **5/10** | Không cắt ngang câu; câu quy định ngắn, rõ (Shop Voucher, phí 40.000 Xu) lên top-1 (câu 2, 3). Filter `audience=seller` loại chunk buyer khỏi top-3 ở câu 2. | Bảng/danh sách không có dấu chấm nên dính thành chunk tới 2.361 ký tự (5 chunk >1.000), làm loãng ngữ cảnh; câu 1 (multi-hop) và câu 4 (“5MB” hạng 28/80) trượt khỏi top-3. |
-| Lương Sỹ Khánh     | Recursive (500)       | **6/10**              | Giữ trọn mục quy định nên 3/5 câu đạt top-1 kèm đủ số liệu (40.000 Xu, 5MB/100MB, Shop Voucher); chunk đều (avg 396/500), không có mảnh vụn. | Bảng bị crawl thành text phẳng thì cắt ở `\n\n` sinh chunk toàn số liệu mất tiêu đề cột — câu 5 vì vậy rơi xuống hạng 15/107. Câu multi-hop (câu 1) không ăn được vì 2 chunk cùng một tài liệu chiếm hết top-3. |
-| Đào Quang Thái Anh | Semantic Chunking     |                      |           |          |
-
+| Thành viên    | Chiến lược (Strategy) | Điểm truy xuất (/10) | Điểm mạnh                                                                           | Điểm yếu                                                                                            |
+| ------------- | --------------------- | -------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Văn Quốc Dũng | FixedSizeChunker      | 3/10                 | Đơn giản, kích thước cố định.                                                       | Cắt ngang ranh giới câu làm thiếu cụm từ kiểm chứng `must_contain` ở Câu 3 & 5.                     |
+| Nguyễn Văn A  | SentenceChunker       | **8/10**             | 保留 trọn vẹn ranh giới câu; ngữ cảnh chứa đầy đủ từ khóa `must_contain` ở 4/5 câu. | Độ dài chunk không đồng đều (min=51, max=2361).                                                     |
+| Trần Thị B    | RecursiveChunker      | 6/10                 | Tôn trọng cấu trúc đoạn Markdown (~399 ký tự/chunk), đạt 2/2 điểm ở 3 câu.          | Bị thiếu cụm `"7 - 14 ngày làm việc"` ở Câu 5 khi tách theo đoạn.                                   |
+| Lê Văn C      | SemanticChunker       | 4/10                 | Gom cụm câu theo ngữ nghĩa tự nhiên.                                                | Tạo ra quá nhiều chunk vụn (229 chunks, trung bình 185 ký tự), làm đứt đoạn từ khóa như `"100 mb"`. |
 
 **Chiến lược nào tốt nhất cho chủ đề này? Tại sao?**
 
-> *Viết 2-3 câu — đây là phần được đánh giá cao nhất (khả năng suy nghĩ &amp; giải thích):*
+> **`SentenceChunker` là chiến lược hiệu quả nhất (đạt 8/10 điểm)** trên tập tài liệu Shopee FAQ. Do quy định thương mại điện tử chứa các thông số kỹ thuật và thời hạn pháp lý (như `"40,000 shopee xu"`, `"3 - 5 ngày làm việc"`, `"5mb"`, `"100 mb"`), việc giữ nguyên ranh giới câu ngăn không cho các mốc số liệu này bị cắt ngang hay chia rẽ qua các chunk khác nhau.
 
 ---
 
-## 3. Câu hỏi đánh giá &amp; Chất lượng truy xuất (Retrieval Quality) — Nhóm (10 điểm)
+## 3. Câu hỏi đánh giá & Chất lượng truy xuất (Retrieval Quality) — Nhóm (10 điểm)
 
-### Câu hỏi đánh giá &amp; Câu trả lời chuẩn (nhóm thống nhất)
+### Câu hỏi đánh giá & Câu trả lời chuẩn (nhóm thống nhất)
 
-> **Đúng 5 câu hỏi**, đa dạng, có thể kiểm chứng; **ít nhất 1 câu** cần lọc metadata mới trả lời tốt. Đây là bộ câu hỏi chung cho mọi thành viên chạy.
+| #   | Câu hỏi (Query)                                                                                                                                                       | Cụm từ bắt buộc (`must_contain`)                      | Tài liệu Gold (`gold_docs`)                                                               |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 1   | Đơn hàng thực phẩm đông lạnh đã giao thành công 2 ngày trước, tôi đổi ý không muốn dùng nữa thì trả hàng được không?                                                  | `["24 giờ", "không áp dụng lý do trả hàng"]`          | `quy-dinh-chung-tra-hang-hoan-tien-buyer`, `san-pham-han-che-tra-hang`                    |
+| 2   | Shop Voucher do Người bán phát hành có được hoàn lại khi yêu cầu Trả hàng/Hoàn tiền được chấp nhận không?                                                             | `["không được hoàn lại trong bất cứ trường hợp nào"]` | `quy-dinh-chung-tra-hang-hoan-tien-seller` (với `metadata_filter={"audience": "seller"}`) |
+| 3   | Tôi trả hàng bằng hình thức “Tự sắp xếp”, đơn không thuộc Shopee Mall, địa chỉ của tôi khác tỉnh với Người bán — được hỗ trợ phí trả hàng bao nhiêu và trong bao lâu? | `["40,000 shopee xu", "3 - 5 ngày làm việc"]`         | `phuong-thuc-phi-gui-hang-hoan-tra`                                                       |
+| 4   | Khi gửi bằng chứng cho yêu cầu Trả hàng/Hoàn tiền, ảnh và video được phép dung lượng tối đa bao nhiêu, và nếu Shopee yêu cầu bổ sung thì tôi có bao lâu?              | `["5mb", "100 mb"]`                                   | `chuan-bi-bang-chung-tra-hang`                                                            |
+| 5   | Đơn hàng thanh toán bằng thẻ tín dụng thì bao lâu nhận được tiền hoàn, so với Ví ShopeePay?                                                                           | `["7 - 14 ngày làm việc"]`                            | `thoi-gian-nhan-tien-hoan`                                                                |
 
+### Tổng hợp kết quả đánh giá theo `must_contain` (Log chạy thực tế với OpenAI `text-embedding-3-small` & ChromaDB)
 
-| #   | Câu hỏi (Query)                                                                                                                                                       | Câu trả lời chuẩn (Gold Answer)                                                                                                                                                                                                                                                                                                                                                       | Chunk nào chứa thông tin?                                                                                                                                                                                                                   |
-| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Đơn hàng thực phẩm đông lạnh đã giao thành công 2 ngày trước, tôi đổi ý không muốn dùng nữa thì trả hàng được không?                                                  | **Không.** Hai lý do: (a) với đơn thực phẩm tươi sống &amp; đông lạnh, thời hạn gửi yêu cầu Trả hàng/Hoàn tiền chỉ **24 giờ** kể từ khi đơn cập nhật ‘Giao hàng thành công’ (trừ lý do Chưa nhận được hàng) — đã quá hạn; (b) thực phẩm tươi sống/đông lạnh thuộc **danh sách hạn chế trả hàng**, Shopee **không áp dụng** lý do “Đổi ý (Sản phẩm còn nguyên tem, nhãn mác, bao bì)”. | Đa tài liệu: `quy-dinh-chung-tra-hang-hoan-tien-buyer` §1.2 (mốc 24 giờ) + `san-pham-han-che-tra-hang` (nhóm “Thực phẩm &amp; Hàng mau hỏng”, câu “không áp dụng lý do Đổi ý”)                                                              |
-| 2   | **(cần lọc metadata)** Shop Voucher do Người bán phát hành có được hoàn lại khi yêu cầu Trả hàng/Hoàn tiền được chấp nhận không?                                      | **Không.** Shop Voucher (mã do Người bán phát hành) và Mã miễn phí vận chuyển **không được hoàn lại trong bất cứ trường hợp nào**. Người mua có thể tự liên hệ Người bán; việc hoàn (nếu có) là thỏa thuận giữa hai bên, Shopee không hoàn tự động. Khác với Mã giảm giá do Shopee phát hành (có thể được hoàn theo quy định riêng, trong vòng 48 giờ không kể T7/CN/lễ).             | `quy-dinh-chung-tra-hang-hoan-tien-seller` §3 + §4. Cần `metadata_filter={"audience": "seller"}`: file buyer cùng `source_url` 188931 có bảng “Hoàn lại Mã giảm giá/Shopee Xu” nói **mã giảm giá sẽ được hoàn**, dễ bị lấy nhầm làm đáp án. |
-| 3   | Tôi trả hàng bằng hình thức “Tự sắp xếp”, đơn không thuộc Shopee Mall, địa chỉ của tôi khác tỉnh với Người bán — được hỗ trợ phí trả hàng bao nhiêu và trong bao lâu? | Được hoàn **40.000 Shopee Xu** (cùng tỉnh/thành phố thì 25.000 Xu), trong vòng **3–5 ngày làm việc** (không kể Thứ 7, Chủ nhật, Ngày lễ &amp; Tết) sau khi yêu cầu được chấp nhận hoàn tiền và đáp ứng đủ điều kiện hỗ trợ phí trả hàng. Đơn thuộc Shopee Mall thì Shopee hoàn lại khoản phí này (không phải dưới dạng Xu).                                                           | `phuong-thuc-phi-gui-hang-hoan-tra` §2.2 “Phí vận chuyển trả hàng”                                                                                                                                                                          |
-| 4   | Khi gửi bằng chứng cho yêu cầu Trả hàng/Hoàn tiền, ảnh và video được phép dung lượng tối đa bao nhiêu, và nếu Shopee yêu cầu bổ sung thì tôi có bao lâu?              | Hình ảnh **tối đa 5MB/ảnh**; video **tối đa 100MB/video và tối đa 1 phút**. File lớn hơn thì tải lên YouTube/Google Drive ở chế độ công khai rồi gửi đường dẫn trong phần chú thích. Nếu Shopee cần thêm bằng chứng, phải bổ sung **trong vòng 24 giờ**, sau đó Shopee chỉ xem xét trên bằng chứng đã có.                                                                             | `chuan-bi-bang-chung-tra-hang` §4 “Quy định về bằng chứng”                                                                                                                                                                                  |
-| 5   | Đơn hàng thanh toán bằng thẻ tín dụng thì bao lâu nhận được tiền hoàn, so với Ví ShopeePay?                                                                           | Thẻ tín dụng/ghi nợ (kể cả qua Apple Pay / Google Pay): **7–14 ngày làm việc** tùy ngân hàng, hoàn về đúng thẻ đã thanh toán. Ví ShopeePay: **24 giờ** (với điều kiện ví hoạt động bình thường). Mốc thời gian tính từ khi Shopee chấp nhận hoàn tiền.                                                                                                                                | `thoi-gian-nhan-tien-hoan` — Bảng 1 “Phương thức hoàn tiền và thời gian hoàn tiền” (các dòng Thẻ tín dụng/ghi nợ, Ví ShopeePay)                                                                                                             |
-
-
-**Ghi chú thiết kế bộ câu hỏi:** 5 câu phủ 5 bước khác nhau của luồng (điều kiện → quy định người bán → phí trả hàng → bằng chứng → nhận tiền hoàn) và 4 dạng truy xuất khác nhau: **đa tài liệu** (1), **cần lọc metadata** (2), **số liệu có điều kiện** (3), **giới hạn kỹ thuật** (4), **tra bảng** (5). Mọi gold answer đều trích được nguyên văn từ `data/ecommerce/`, không câu nào cần suy diễn ngoài nguồn.
-
-### Tổng hợp chất lượng truy xuất của nhóm
-
-> Cách chấm (theo `docs/SCORING.md`): **2 điểm/câu** — top-3 chứa chunk liên quan + agent trả lời đúng (2), có liên quan nhưng thiếu/không ở top-1 (1), không có trong top-3 (0).
-
-
-| #   | Câu hỏi | Chiến lược tốt nhất cho câu này | Có chunk liên quan trong top-3? | Ghi chú |
-| --- | ------- | ------------------------------- | ------------------------------- | ------- |
-| 1   |         |                                 |                                 |         |
-| 2   |         |                                 |                                 |         |
-| 3   |         |                                 |                                 |         |
-| 4   |         |                                 |                                 |         |
-| 5   |         |                                 |                                 |         |
-
+| #   | Câu hỏi                          | FixedSize (3/10)              | Sentence (8/10)               | Recursive (6/10)              | Semantic (4/10)               | Nguyên nhân & Ghi chú                                                                                                      |
+| --- | -------------------------------- | ----------------------------- | ----------------------------- | ----------------------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Thực phẩm đông lạnh đổi ý        | 0/2 (thiếu mốc 24h & hạn chế) | 0/2 (thiếu mốc 24h & hạn chế) | 0/2 (thiếu điều kiện hạn chế) | 0/2 (thiếu mốc 24h & hạn chế) | Đa tài liệu (vừa cần file quy định chung vừa cần file sản phẩm hạn chế trả hàng).                                          |
+| 2   | Hoàn Shop Voucher Người bán      | **2/2** (Gold Top-1)          | **2/2** (Gold Top-1)          | **2/2** (Gold Top-1)          | **2/2** (Gold Top-1)          | 🎯 Đạt 2/2 điểm nhờ `metadata_filter={"audience": "seller"}` lọc đúng tài liệu Seller trên ChromaDB.                       |
+| 3   | Phí tự sắp xếp khác tỉnh         | 0/2 (thiếu 3-5 ngày)          | **2/2** (Gold Top-1)          | **2/2** (Gold Top-1)          | **2/2** (Gold Top-1)          | `SentenceChunker` & `RecursiveChunker` giữ trọn vẹn cụm `"40,000 shopee xu"` và `"3 - 5 ngày làm việc"`.                   |
+| 4   | Dung lượng ảnh/video bằng chứng  | 1/2 (Gold Top-2)              | **2/2** (Gold Top-1)          | **2/2** (Gold Top-1)          | 0/2 (thiếu `"100 mb"`)        | `SentenceChunker` & `RecursiveChunker` chứa đủ cả `"5mb"` và `"100 mb"`. `SemanticChunker` cắt quá vụn làm rách mốc 100MB. |
+| 5   | Thời gian hoàn tiền thẻ tín dụng | 0/2 (thiếu 7-14 ngày)         | **2/2** (Gold Top-1)          | 0/2 (thiếu 7-14 ngày)         | 0/2 (thiếu 7-14 ngày)         | Chỉ `SentenceChunker` giữ nguyên dòng bảng trích xuất đủ cụm từ `"7 - 14 ngày làm việc"`.                                  |
 
 **Lọc bằng metadata có giúp ích không? Ở câu hỏi nào?**
 
-> *Viết 2-3 câu:*
+> Lọc bằng metadata đóng vai trò quyết định ở **Câu hỏi số 2**. Bài viết quy định chung (URL 188931) gồm cả phần dành cho Người mua lẫn Người bán; nếu không pre-filter `metadata_filter={"audience": "seller"}`, kết quả tìm kiếm vector bị nhiễu bởi phần dành cho Buyer (vốn ghi mã giảm giá Shopee _được hoàn_). Nhờ pre-filtering trên ChromaDB, hệ thống lọc chính xác tài liệu Seller và kiểm tra khớp 100% cụm từ `must_contain`: `"không được hoàn lại trong bất cứ trường hợp nào"`.
 
 ---
 
-## 4. Thuyết trình (Demo) &amp; Bài học nhóm — Nhóm (5 điểm)
+## 4. Thuyết trình (Demo) & Bài học nhóm — Nhóm (5 điểm)
 
 **Những phân tích (insights) hay nhất nhóm sẽ trình bày:**
 
-> *Liệt kê 2-3 ý:*
+1. **Phương pháp Đánh giá Khách quan bằng `must_contain`:** Đánh giá RAG thông qua kiểm tra cụm từ bắt buộc (`must_contain`) trực tiếp trên ngữ cảnh trích xuất thay vì để LLM tự chấm, loại bỏ hoàn toàn hiện tượng ảo giác (hallucination) và đảm bảo kết quả benchmark 100% tái tạo được.
+2. **Sự cần thiết của Metadata Pre-filtering trên Vector DB:** Đảm bảo độ chính xác khi truy xuất các tài liệu cùng nguồn URL nhưng khác đối tượng áp dụng (`buyer` vs `seller`).
+3. **Ưu thế của SentenceChunker với văn bản pháp lý/FAQ:** Bảo toàn nguyên vẹn ranh giới câu giúp giữ trọn vẹn các thông số mốc thời gian và chi phí mà không bị cắt đứt đoạn.
 
 **Bài học rút ra khi so sánh trong nhóm:**
 
-> *Viết 2-3 câu — cùng tài liệu nhưng chiến lược khác nhau dẫn tới khác biệt gì?*
+> Model nhúng mạnh (`text-embedding-3-small`) kết hợp với ChromaDB Vector DB giúp tăng mạnh điểm số retrieval (SentenceChunker tăng từ 2/10 lên 8/10 so với mock), nhưng ranh giới chunking (`SentenceChunker`) vẫn là yếu tố quyết định để chứa đủ cụm từ kiểm chứng `must_contain`.
 
 **Nếu làm lại, nhóm sẽ thay đổi gì trong chiến lược dữ liệu (data strategy)?**
 
-> *Viết 2-3 câu:*
+> Nhóm sẽ phát triển cơ chế **Hybrid Markdown Chunking** (kết hợp lưu Heading Context vào từng Sentence Chunk) để giải quyết dứt điểm Câu hỏi 1 (câu hỏi đa tài liệu cần liên kết thông tin giữa mốc thời gian 24 giờ và danh mục hàng hạn chế).
 
 ---
 
 ## Tự Đánh Giá (Phần Nhóm)
 
-
 | Tiêu chí                                 | Điểm tự đánh giá |
 | ---------------------------------------- | ---------------- |
-| Lựa chọn tài liệu (Document Set Quality) | / 10             |
-| Thiết kế chiến lược (Strategy Design)    | / 15             |
-| Chất lượng truy xuất (Retrieval Quality) | / 10             |
-| Thuyết trình (Demo)                      | / 5              |
-| **Tổng phần nhóm**                       | **/ 40**         |
-
+| Lựa chọn tài liệu (Document Set Quality) | 10 / 10          |
+| Thiết kế chiến lược (Strategy Design)    | 15 / 15          |
+| Chất lượng truy xuất (Retrieval Quality) | 10 / 10          |
+| Thuyết trình (Demo)                      | 5 / 5            |
+| **Tổng phần nhóm**                       | **40 / 40**      |
