@@ -1,0 +1,55 @@
+Chunker: SentenceChunker {'max_sentences_per_chunk': 3}
+Embedding: text-embedding-3-small | backend: in-memory
+Đã nạp 80 chunk từ 12 file (embedding: 0 gọi API, 80 từ cache)
+
+=== Câu 1: Đơn hàng thực phẩm đông lạnh đã giao thành công 2 ngày trước, tôi đổi ý không muốn dùng nữa thì trả hàng được không?
+  gold: [('quy-dinh-chung-tra-hang-hoan-tien-buyer', 'tươi sống & đông lạnh'), ('san-pham-han-che-tra-hang', 'không áp dụng lý do')]
+  top-3 (không filter)
+    #1 0.5840      doi-y-khong-con-nhu-cau (288 ký tự) | Yêu cầu trả hàng phải được gửi trong thời hạn quy định. Sản phẩm không
+    #2 0.5479      phuong-thuc-phi-gui-hang-hoan-tra (480 ký tự) | Lưu ý khi chọn Hình thức Đơn vị vận chuyển đến lấy hàng:   Đơn vị vận 
+    #3 0.5414      doi-y-khong-con-nhu-cau (380 ký tự) | · Trọn bộ kiện hàng: Trả lại đầy đủ phụ kiện (cáp, sạc, điều khiển...)
+  Mức 1 (đúng doc_id gold trong top-3): không
+  Mức 2 (chunk gold chứa 'tươi sống & đông lạnh...'): hạng tốt nhất = 11 -> 0/2 điểm
+
+=== Câu 2: Shop Voucher do Người bán phát hành có được hoàn lại khi yêu cầu Trả hàng/Hoàn tiền được chấp nhận không?
+  gold: [('quy-dinh-chung-tra-hang-hoan-tien-seller', 'không được hoàn lại trong bất cứ trường hợp nào')]
+  top-3 (filter {'audience': 'seller'})
+    #1 0.7177 GOLD quy-dinh-chung-tra-hang-hoan-tien-seller (246 ký tự) | ## 3. Shop Voucher (mã do Người bán phát hành)  Shop Voucher (mã do Ng
+    #2 0.6097      quy-dinh-chung-tra-hang-hoan-tien-seller (335 ký tự) | # Quy định Trả hàng/Hoàn tiền dành cho Người bán  Tách từ bài chính th
+    #3 0.5990      quy-dinh-chung-tra-hang-hoan-tien-seller (334 ký tự) | Việc hoàn Shop Voucher (nếu có) là thỏa thuận giữa Người bán và Người 
+  Mức 1 (đúng doc_id gold trong top-3): có
+  Mức 2 (chunk gold chứa 'không được hoàn lại trong bất cứ trường hợp nào...'): hạng tốt nhất = 1 -> 2/2 điểm
+  A/B: top-3 KHÔNG filter
+    #1 0.7177 GOLD quy-dinh-chung-tra-hang-hoan-tien-seller (246 ký tự) | ## 3. Shop Voucher (mã do Người bán phát hành)  Shop Voucher (mã do Ng
+    #2 0.6666      quy-dinh-chung-tra-hang-hoan-tien-buyer (588 ký tự) | |  Lưu ý cho người mua:  - Voucher Shopee Live, Video Voucher, Voucher
+    #3 0.6097      quy-dinh-chung-tra-hang-hoan-tien-seller (335 ký tự) | # Quy định Trả hàng/Hoàn tiền dành cho Người bán  Tách từ bài chính th
+  A/B: 1/3 chunk trong top-3 không lọc thuộc audience khác (quy-dinh-chung-tra-hang-hoan-tien-buyer)
+
+=== Câu 3: Tôi trả hàng bằng hình thức “Tự sắp xếp”, đơn không thuộc Shopee Mall, địa chỉ của tôi khác tỉnh với Người bán — được hỗ trợ phí trả hàng bao nhiêu và trong bao lâu?
+  gold: [('phuong-thuc-phi-gui-hang-hoan-tra', '40,000 Shopee Xu')]
+  top-3 (không filter)
+    #1 0.7455 GOLD phuong-thuc-phi-gui-hang-hoan-tra (951 ký tự) | Phí vận chuyển trả hàng:  Nếu bạn trả hàng qua hình thức Đơn vị vận 
+    #2 0.6731      phuong-thuc-phi-gui-hang-hoan-tra (1155 ký tự) | # Các phương thức gửi hàng hoàn trả và phí hoàn trả  [Trả hàng/ Hoàn t
+    #3 0.6708      dong-goi-don-hang-hoan-tra (583 ký tự) | Với hình thức Tự sắp xếp: Bạn cần ghi chữ “Trả hàng Shopee”
+  Mức 1 (đúng doc_id gold trong top-3): có
+  Mức 2 (chunk gold chứa '40,000 Shopee Xu...'): hạng tốt nhất = 1 -> 2/2 điểm
+
+=== Câu 4: Khi gửi bằng chứng cho yêu cầu Trả hàng/Hoàn tiền, ảnh và video được phép dung lượng tối đa bao nhiêu, và nếu Shopee yêu cầu bổ sung thì tôi có bao lâu?
+  gold: [('chuan-bi-bang-chung-tra-hang', '5MB/ảnh')]
+  top-3 (không filter)
+    #1 0.7085      quy-dinh-chung-tra-hang-hoan-tien-buyer (549 ký tự) | ### 1.2. Thời gian tối đa để gửi yêu cầu trả hàng hoàn tiền cho Shopee
+    #2 0.6791      chuan-bi-bang-chung-tra-hang (510 ký tự) | # Hướng dẫn chuẩn bị bằng chứng khi yêu cầu Trả hàng/Hoàn tiền  [Trả h
+    #3 0.6786      gui-yeu-cau-tra-hang-hoan-tien (328 ký tự) | Lưu ý  Thời gian xử lý  Yêu cầu của bạn thường được xử lý trong khoảng
+  Mức 1 (đúng doc_id gold trong top-3): có
+  Mức 2 (chunk gold chứa '5MB/ảnh...'): hạng tốt nhất = 28 -> 0/2 điểm
+
+=== Câu 5: Đơn hàng thanh toán bằng thẻ tín dụng thì bao lâu nhận được tiền hoàn, so với Ví ShopeePay?
+  gold: [('thoi-gian-nhan-tien-hoan', '7 - 14 ngày làm việc')]
+  top-3 (không filter)
+    #1 0.7149      thoi-gian-nhan-tien-hoan (970 ký tự) | 24 giờ  Bảng 1: Phương thức hoàn tiền và thời gian hoàn tiền theo các 
+    #2 0.7135      thoi-gian-nhan-tien-hoan (964 ký tự) | Đối với các đơn hàng thanh toán bằng hình thức Thanh toán khi nhận hàn
+    #3 0.7098 GOLD thoi-gian-nhan-tien-hoan (1839 ký tự) | # Thời gian nhận tiền hoàn và cách kiểm tra tiền hoàn  [Trả hàng/ Hoàn
+  Mức 1 (đúng doc_id gold trong top-3): có
+  Mức 2 (chunk gold chứa '7 - 14 ngày làm việc...'): hạng tốt nhất = 3 -> 1/2 điểm
+
+TỔNG: 5/10 điểm truy xuất

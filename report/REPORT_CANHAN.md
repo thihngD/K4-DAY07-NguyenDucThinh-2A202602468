@@ -152,7 +152,7 @@ Dự đoán được ghi trước khi chạy `compute_similarity()`. Điểm th�
 
 Chạy **5 câu hỏi đánh giá của nhóm** trên mã nguồn cá nhân của bạn trong gói `src`. **5 câu hỏi này phải trùng với các thành viên cùng nhóm** (xem `REPORT_NHOM.md`).
 
-> **Cấu hình chạy:** `SentenceChunker(max_sentences_per_chunk=3)` trên 12 file `data/ecommerce/` (bỏ YAML front matter) → 80 chunk; embedding `text-embedding-3-small`; `EmbeddingStore` in-memory, `top_k=3`; agent = `KnowledgeBaseAgent` với LLM `gpt-4o-mini` (`temperature=0`). Câu 2 dùng `search_with_filter(metadata_filter={"audience": "seller"})`, các câu còn lại dùng `search`. Số liệu khớp với khối "Thành viên 2" trong `REPORT_NHOM.md`.
+> **Cấu hình chạy** (`python bench.py`, kết quả đầy đủ trong `ket_qua_benchmark.txt`; embedding được cache theo hash nội dung trong `.bench_cache/`, chạy lại tốn 0 lượt gọi API): `SentenceChunker(max_sentences_per_chunk=3)` trên 12 file `data/ecommerce/` (bỏ YAML front matter) → 80 chunk; embedding `text-embedding-3-small`; `EmbeddingStore` in-memory, `top_k=3`; agent = `KnowledgeBaseAgent` với LLM `gpt-4o-mini` (`temperature=0`). Câu 2 dùng `search_with_filter(metadata_filter={"audience": "seller"})`, các câu còn lại dùng `search`. Số liệu khớp với khối "Thành viên 2" trong `REPORT_NHOM.md`. Chấm hai mức: (1) đúng `doc_id` gold trong top-3; (2) chunk gold, tức chunk của đúng tài liệu **và** chứa chuỗi đặc trưng của đáp án (ví dụ `5MB/ảnh`, `40,000 Shopee Xu`), hạng tính trên toàn bộ 80 chunk.
 
 | # | Câu hỏi (Query) | Top-1 Chunk truy xuất được (tóm tắt) | Điểm Score | Có liên quan không? (Relevant) | Câu trả lời của Agent (tóm tắt) |
 |---|-------|--------------------------------|-------|-----------|------------------------|
@@ -164,11 +164,38 @@ Chạy **5 câu hỏi đánh giá của nhóm** trên mã nguồn cá nhân củ
 
 **Bao nhiêu câu hỏi trả về chunk có liên quan trong top-3?** **3 / 5** (câu 2, 3, 5). Theo cách chấm 2 điểm/câu của `docs/SCORING.md`: câu 2 và 3 được 2 điểm, câu 5 được 1 điểm (gold ở hạng 3, không ở top-1), câu 1 và 4 được 0 điểm, tổng **5/10**.
 
+**Chấm hai mức (theo `ket_qua_benchmark.txt`):**
+
+| # | Mức 1: đúng `doc_id` gold trong top-3 | Mức 2: hạng chunk gold (/80) | Điểm |
+|---|---|---|---|
+| 1 | Không | 11 | 0 |
+| 2 | Có | 1 | 2 |
+| 3 | Có | 1 | 2 |
+| 4 | **Có** | 28 | 0 |
+| 5 | Có | 3 | 1 |
+
+Câu 4 là ca đáng chú ý: đúng tài liệu (mức 1) nhưng sai chunk (mức 2), nên chỉ chấm theo `doc_id` sẽ tưởng đạt. Vì vậy nhóm chấm theo mức 2.
+
+**A/B lọc metadata (câu 2, cùng câu hỏi, cùng chunker):**
+
+| Hạng | Có filter `audience=seller` | Không filter |
+|---|---|---|
+| 1 | seller, Shop Voucher §3, 0.7177 (GOLD) | seller, Shop Voucher §3, 0.7177 (GOLD) |
+| 2 | seller, tiêu đề bài, 0.6097 | **buyer**, "Lưu ý cho người mua: Voucher Shopee Live…", 0.6666 |
+| 3 | seller, "Việc hoàn Shop Voucher (nếu có)…", 0.5990 | seller, tiêu đề bài, 0.6097 |
+
+Chunk gold vẫn đứng đầu ở cả hai, nên filter **không** làm đổi điểm câu 2 (2/2 cả hai lần). Tác dụng của filter là dọn top-3: không lọc thì chunk buyer nói về hoàn mã (dễ bị hiểu là "mã được hoàn") chen vào hạng 2 với score cao hơn chunk seller thứ hai, và đó là ngữ cảnh mà agent sẽ đọc. Có filter thì cả 3 chunk đưa cho agent đều thuộc audience seller. Chưa thấy filter quá chặt làm mất kết quả tốt: câu 2 có đủ 3 chunk seller để trả về.
+
 **Nhận xét lỗi:**
 - **Câu 1 (multi-hop):** cả 3 chunk top-3 đều bám cụm từ "đổi ý"/"trả hàng" chứ không bám "thực phẩm đông lạnh" hay "24 giờ". Với chunk theo câu, mỗi chunk chỉ mang một mảnh thông tin nên một truy vấn cần ghép hai tài liệu rất khó trúng cả hai.
-- **Câu 4:** đáp án là hai dòng ngắn ("Hình ảnh: Không quá 5MB/ảnh.", "Video: Không quá 100 MB/video…") nằm cạnh các dòng tiêu đề/gạch đầu dòng trong bài bằng chứng, nên chunk chứa chúng (hạng 28/80) không nổi bật so với truy vấn. Vế "bao lâu" của câu hỏi lại kéo chunk về thời hạn gửi yêu cầu (§1.2 bài buyer) lên top-1. Tôi chưa kiểm chứng nguyên nhân này bằng thực nghiệm khác (ví dụ tách câu hỏi làm hai), nên xem đây là giả thuyết.
+- **Câu 4 (đã kiểm chứng):** chunk gold `chuan-bi-bang-chung-tra-hang#7` không có vấn đề (417 ký tự, chứa cả "5MB/ảnh", "100 MB/video" và cách tải file lớn). Lỗi nằm ở **câu hỏi ghép hai ý** (dung lượng *và* thời hạn bổ sung): vế "bao lâu" kéo top-1 về chunk thời hạn gửi yêu cầu (§1.2 bài buyer, 0.7085), còn chunk gold chỉ đạt hạng 28. Thử tách riêng vế "ảnh và video được phép dung lượng tối đa bao nhiêu?" thì chunk gold lên **hạng 1 (0.6625)**. Giả thuyết trước đó của tôi (chunk bị loãng vì nằm cạnh dòng ngắn) là **sai**.
 - **Câu 5:** bảng bị crawl thành text phẳng nên dính thành chunk dài 1.839 ký tự, làm điểm của nó (0.7098) ngang với hai chunk cùng tài liệu (0.7149 / 0.7132). Xếp hạng chỉ hơn kém nhau 0.005, tức embedding không phân biệt được chunk nào "đúng" hơn.
 - **Câu 2 cho thấy filter có ích:** khi không lọc, chunk buyer về "Hoàn lại Mã giảm giá" (nói mã *được* hoàn) chen lên hạng 2 với score 0.667. Lọc `audience=seller` loại nó ra nên agent trả lời đúng.
+
+**Failure case (câu 4) — câu nào hỏng, vì sao, đề xuất sửa:**
+- **Hỏng:** câu 4, chunk gold hạng 28/80, agent trả lời "không tìm thấy thông tin" dù tài liệu có đáp án.
+- **Vì sao:** câu hỏi gồm hai ý độc lập, embedding của cả câu là một vector "trung bình" nên bị ý thứ hai (thời hạn) lấn át; top-3 toàn chunk nói về thời gian. Chunking không phải thủ phạm (chunk gold gọn và đủ đáp án).
+- **Đề xuất sửa:** (1) tách câu hỏi thành các câu con rồi gộp kết quả (query decomposition), đã thử thủ công với vế dung lượng và chunk gold lên hạng 1; (2) tăng `top_k` từ 3 lên 5 làm agent có thêm ngữ cảnh, nhưng ở câu này gold ở hạng 28 nên không đủ; (3) với câu 1 (cũng đa ý, gold hạng 11) cùng cách tách là hướng thử tiếp, chưa chạy nên chưa khẳng định.
 
 **Điều hay nhất tôi học được từ thành viên khác / nhóm khác (qua demo):**
 > Từ số liệu của Khánh (Recursive 500, Gemini embedding, 6/10) trên cùng bộ câu hỏi: chunk theo ranh giới `

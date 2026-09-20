@@ -52,10 +52,10 @@ Mốc thời gian tính tương đối từ lúc lớp bắt đầu (0:00).
 
 | # | Nộp gì | Ai | Điểm | Xong |
 | --- | --- | --- | --- | --- |
-| 1 | `src/` hoàn thiện, `pytest tests/ -v` → 42 passed | Mỗi người | 30 | [ ] |
+| 1 | `src/` hoàn thiện, `pytest tests/ -v` → 42 passed | Mỗi người | 30 | [x] |
 | 2 | `data/<chu-de>/` — 5–10 tài liệu `.md` + `sources.csv` | Nhóm | 10 | [ ] |
-| 3 | `bench.py` + `ket_qua_benchmark.txt` | Mỗi người | nền cho #4, #5 | [ ] |
-| 4 | `report/REPORT_CANHAN.md` | Mỗi người | 60 (gồm #1) | [ ] |
+| 3 | `bench.py` + `ket_qua_benchmark.txt` | Mỗi người | nền cho #4, #5 | [x] |
+| 4 | `report/REPORT_CANHAN.md` | Mỗi người | 60 (gồm #1) | [x] |
 | 5 | `report/REPORT_NHOM.md` | Nhóm | 40 (gồm #2) | [ ] |
 | 6 | Repo GitHub `K4-DAY07-HoVaTen-MSSV` + link vlearn | Mỗi người | điều kiện chấm | [ ] |
 
@@ -92,30 +92,30 @@ Lưu ý thực tế:
 
 ### CP3 — 1:45 · `chunking.py`
 
-- [ ] Warm-up: cosine similarity (câu cao khác từ vựng nhưng cùng nghĩa, câu thấp, vì sao cosine hơn Euclid) → REPORT_CANHAN mục 1
-- [ ] Warm-up: bài toán chunking 10.000 ký tự / 500 / 50, kiểm lại bằng `FixedSizeChunker`, và trả lời khi overlap = 100 → REPORT_CANHAN mục 1
-- [ ] `SentenceChunker.chunk`: tách theo `". "`, `"! "`, `"? "`, `".\n"`, giữ dấu câu, text rỗng trả `[]`
-- [ ] `RecursiveChunker.chunk` / `_split`: separator `["\n\n", "\n", ". ", " ", ""]`, có cả đệ quy xuống và gom lên, xử lý `separators=[]`
-- [ ] `compute_similarity`: trả `0.0` khi vector độ dài 0
-- [ ] `ChunkingStrategyComparator.compare`: đúng 3 key `fixed_size`, `by_sentences`, `recursive`, mỗi key có `count`, `avg_length`, `chunks`; chặn chia 0
-- [ ] Giữ nguyên chữ ký hàm (`def ...`), chỉ thay phần `TODO` / `raise NotImplementedError`
-- [ ] `pytest tests/ -k "Chunker or Similarity or Compare" -v` → **23 passed**
-- [ ] Ghi edge case chưa xử lý (chữ viết tắt, số thập phân) vào báo cáo
+- [x] Warm-up: cosine similarity (câu cao khác từ vựng nhưng cùng nghĩa, câu thấp, vì sao cosine hơn Euclid) → REPORT_CANHAN mục 1
+- [x] Warm-up: bài toán chunking 10.000 ký tự / 500 / 50, kiểm lại bằng `FixedSizeChunker`, và trả lời khi overlap = 100 → REPORT_CANHAN mục 1
+- [x] `SentenceChunker.chunk`: tách theo `". "`, `"! "`, `"? "`, `".\n"`, giữ dấu câu, text rỗng trả `[]`
+- [x] `RecursiveChunker.chunk` / `_split`: separator `["\n\n", "\n", ". ", " ", ""]`, có cả đệ quy xuống và gom lên, xử lý `separators=[]`
+- [x] `compute_similarity`: trả `0.0` khi vector độ dài 0
+- [x] `ChunkingStrategyComparator.compare`: đúng 3 key `fixed_size`, `by_sentences`, `recursive`, mỗi key có `count`, `avg_length`, `chunks`; chặn chia 0
+- [x] Giữ nguyên chữ ký hàm (`def ...`), chỉ thay phần `TODO` / `raise NotImplementedError`
+- [x] `pytest tests/ -k "Chunker or Similarity or Compare" -v` → **23 passed**
+- [x] Ghi edge case chưa xử lý (chữ viết tắt, số thập phân) vào báo cáo
 
 ### CP4 — 2:30 · `store.py`, `agent.py` (mốc quan trọng nhất)
 
-- [ ] `EmbeddingStore`: `_make_record`, `_search_records`, `add_documents`, `search`, `get_collection_size`, `search_with_filter`, `delete_document`
-- [ ] Bỏ nhánh ChromaDB, chỉ dùng in-memory (đặt `_use_chroma = False`)
-- [ ] `_make_record` copy metadata và luôn có `metadata['doc_id']`
-- [ ] `search` và `search_with_filter` dùng chung `_search_records`; kết quả bỏ `embedding`
-- [ ] `search_with_filter` lọc **trước** rồi mới search
-- [ ] `delete_document` xóa mọi chunk có `doc_id` khớp, trả `True`/`False`
-- [ ] `KnowledgeBaseAgent.answer`: truy xuất top-k → prompt có ngữ cảnh đánh số `[1] [2] [3]` kèm nguồn → gọi `llm_fn`
-- [ ] Prompt yêu cầu chỉ dùng ngữ cảnh; store rỗng thì trả thông báo, không crash, không gọi LLM
-- [ ] `pytest tests/ -v` → **42 passed**; `python main.py "Chunking là gì?"` chạy hết. Dòng `Skipping missing file: data/customer_support_playbook.txt` là bình thường
-- [ ] Dán output `pytest tests/ -v` vào REPORT_CANHAN mục 3
+- [x] `EmbeddingStore`: `_make_record`, `_search_records`, `add_documents`, `search`, `get_collection_size`, `search_with_filter`, `delete_document`
+- [x] Mặc định dùng in-memory (`_use_chroma = False`). ChromaDB chỉ là backend tùy chọn (`use_chroma=True`, cần `pip install chromadb`), đã kiểm chứng cho kết quả giống in-memory; 42 test không đụng tới nó
+- [x] `_make_record` copy metadata và luôn có `metadata['doc_id']`
+- [x] `search` và `search_with_filter` dùng chung `_search_records`; kết quả bỏ `embedding`
+- [x] `search_with_filter` lọc **trước** rồi mới search
+- [x] `delete_document` xóa mọi chunk có `doc_id` khớp, trả `True`/`False`
+- [x] `KnowledgeBaseAgent.answer`: truy xuất top-k → prompt có ngữ cảnh đánh số `[1] [2] [3]` kèm nguồn → gọi `llm_fn`
+- [x] Prompt yêu cầu chỉ dùng ngữ cảnh; store rỗng thì trả thông báo, không crash, không gọi LLM
+- [x] `pytest tests/ -v` → **42 passed**; `python main.py "Chunking là gì?"` chạy hết. Dòng `Skipping missing file: data/customer_support_playbook.txt` là bình thường
+- [x] Dán output `pytest tests/ -v` vào REPORT_CANHAN mục 3
 
-Hiện trạng: còn 13 chỗ `NotImplementedError` trong `src/`.
+Hiện trạng (2026-09-20): 0 chỗ `NotImplementedError` trong `src/`, 42/42 test pass.
 
 ### CP5 — 3:00 · Chiến lược và benchmark
 
@@ -124,25 +124,25 @@ Hiện trạng: còn 13 chỗ `NotImplementedError` trong `src/`.
 - [ ] Baseline: `ChunkingStrategyComparator().compare()` trên 2–3 tài liệu, bỏ frontmatter trước → REPORT_NHOM mục 2
 - [ ] Mỗi thành viên một chiến lược chunking khác nhau, không trùng
 - [ ] Ít nhất 1 thành viên chunk theo heading/section (khi cắt section dài phải gắn lại tiêu đề vào từng mảnh)
-- [ ] `bench.py`: đọc file `.md`, tách frontmatter, chunk **ngoài** store, mỗi chunk thành `Document(id=f"{stem}#{i}", ...)`
-- [ ] `metadata['doc_id']` = tên file gốc; frontmatter trải vào **mọi** chunk
-- [ ] Mỗi người chỉ đổi một dòng chọn chunker
-- [ ] `python bench.py` in số chunk đã nạp và top-3 (score, doc_id) cho 5 câu
+- [x] `bench.py`: đọc file `.md`, tách frontmatter, chunk **ngoài** store, mỗi chunk thành `Document(id=f"{stem}#{i}", ...)`
+- [x] `metadata['doc_id']` = tên file gốc; frontmatter trải vào **mọi** chunk
+- [x] Mỗi người chỉ đổi một dòng chọn chunker
+- [x] `python bench.py` in số chunk đã nạp và top-3 (score, doc_id) cho 5 câu
 
 ### CP6 — 3:25 · Chạy, so sánh, phân tích lỗi
 
-- [ ] Dùng embedder thật nếu được (Phụ lục B); nếu dùng mock thì ghi rõ trong báo cáo là số liệu bị chi phối bởi mock
-- [ ] Chấm hai mức: theo `doc_id` gold **và** theo chuỗi đặc trưng có trong ngữ cảnh truy xuất
-- [ ] Thang mỗi câu: 2đ (gold ở top-1 và ngữ cảnh có đáp án), 1đ (top-2/3), 0đ (vắng hoặc ngữ cảnh không trả lời được)
-- [ ] A/B bắt buộc: câu cần filter chạy có/không `metadata_filter`, trên cả 3 chiến lược, ghi top-3 từng lần. Nếu hai lần giống hệt thì sửa câu hỏi hoặc cách tách theo `audience`
-- [ ] Ít nhất 1 failure case, đủ 3 phần: câu hỏi nào hỏng, vì sao, đề xuất sửa
-- [ ] `ket_qua_benchmark.txt` của riêng mình; điền bảng top-3 vào REPORT_CANHAN mục 5
+- [x] Dùng embedder thật nếu được (Phụ lục B); nếu dùng mock thì ghi rõ trong báo cáo là số liệu bị chi phối bởi mock
+- [x] Chấm hai mức: theo `doc_id` gold **và** theo chuỗi đặc trưng có trong ngữ cảnh truy xuất
+- [x] Thang mỗi câu: 2đ (gold ở top-1 và ngữ cảnh có đáp án), 1đ (top-2/3), 0đ (vắng hoặc ngữ cảnh không trả lời được)
+- [ ] A/B bắt buộc: câu cần filter chạy có/không `metadata_filter`, trên cả 3 chiến lược, ghi top-3 từng lần. Nếu hai lần giống hệt thì sửa câu hỏi hoặc cách tách theo `audience` (mới làm xong cho chiến lược Sentence của Thịnh: câu 2, top-3 khác nhau giữa có và không filter; còn thiếu Fixed và Recursive)
+- [x] Ít nhất 1 failure case, đủ 3 phần: câu hỏi nào hỏng, vì sao, đề xuất sửa
+- [x] `ket_qua_benchmark.txt` của riêng mình; điền bảng top-3 vào REPORT_CANHAN mục 5
 - [ ] Bảng so sánh giữa các thành viên và failure case vào REPORT_NHOM mục 2 và mục 4 (theo file lab)
 
 ### CP7 — 4:00 · Demo và nộp
 
 - [ ] Demo 6–8 phút, mọi thành viên đều nói phần chiến lược của mình; terminal đã mở sẵn `bench.py` chạy được
-- [ ] `pytest tests/ -v` → 42 passed, không còn `raise NotImplementedError`
+- [x] `pytest tests/ -v` → 42 passed, không còn `raise NotImplementedError`
 - [ ] `data/<chu-de>/` 5–10 tài liệu đủ metadata, `sources.csv` khớp 1-1
 - [ ] Ít nhất 1 query dùng `metadata_filter` theo `audience`
 - [ ] Ít nhất 1 thành viên chunk theo heading/section
@@ -215,5 +215,5 @@ Theo Phụ lục B của file lab:
 - [x] `.env` có `EMBEDDING_PROVIDER` và `OPENAI_API_KEY`
 - [ ] `.env` có `OPENAI_EMBEDDING_MODEL=text-embedding-3-small` (file lab liệt kê biến này, chưa xác minh trong `.env`; nếu thiếu thì code dùng mặc định `text-embedding-3-small`)
 - [x] Smoke test `OpenAIEmbedder` trả vector 1536 chiều
-- [ ] Nên cache embedding theo hash nội dung trong `bench.py` để chạy lại không tốn thêm tiền (file lab khuyến nghị)
+- [x] Nên cache embedding theo hash nội dung trong `bench.py` để chạy lại không tốn thêm tiền (file lab khuyến nghị)
 - [ ] `openai` chưa có trong `requirements.txt` (file lab nói phần bắt buộc chỉ cần `pytest` và `python-dotenv`)
